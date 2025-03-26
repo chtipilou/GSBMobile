@@ -207,9 +207,9 @@ const VisitDetailScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        {/* <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
           <Text style={styles.deleteButtonText}>Supprimer la visite</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
