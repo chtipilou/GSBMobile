@@ -1,4 +1,12 @@
 {
-  "name": "GSBVTTMobile",
-  "displayName": "GSBVTTMobile"
+  "expo": {
+    "name": "GSBVTTMobile",
+    "slug": "GSBVTTMobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "entryPoint": "./index.js",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
 }
