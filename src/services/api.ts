@@ -5,7 +5,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // URL de base de l'API - À MODIFIER selon votre environnement
-const BASE_URL = 'https://s5-4242.nuage-peda.fr/gsbvttMobile/API';
+const BASE_URL = 'https://s5-5036.nuage-peda.fr/SIO2/projet/AP/gsbvttMobile/API/';
 
 // Types de données pour la connexion
 interface LoginResponse {
@@ -79,6 +79,10 @@ export const login = async (email: string, password: string): Promise<LoginRespo
       throw new Error(data.message || 'Erreur de connexion');
     }
 
+    // Stocker les données utilisateur et le token pour une utilisation ultérieure
+    await AsyncStorage.setItem('userToken', data.token);
+    await AsyncStorage.setItem('userData', JSON.stringify(data.user));
+    
     return data;
   } catch (error) {
     console.error('Erreur de connexion:', error);
@@ -123,7 +127,36 @@ const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
 
 // Récupération des visites
 export const fetchVisites = async () => {
-  return fetchWithAuth('/ApiVisite.php');
+  try {
+    // Récupérer l'ID de l'utilisateur connecté depuis le stockage local
+    const userData = await AsyncStorage.getItem('userData');
+    if (!userData) {
+      throw new Error('Utilisateur non connecté');
+    }
+    
+    // Parser les données de l'utilisateur
+    const user = JSON.parse(userData);
+    const userId = user.id;
+    
+    console.log("Récupération des visites pour l'utilisateur ID:", userId);
+    
+    // Appel API avec filtrage par ID utilisateur
+    const data = await fetchWithAuth(`/ApiVisite.php?id_visiteur=${userId}`);
+    
+    // Vérifier si l'API retourne toujours toutes les visites
+    // Filtrage côté client comme solution de secours
+    if (Array.isArray(data)) {
+      console.log(`API a retourné ${data.length} visites avant filtrage`);
+      const filteredVisits = data.filter(visit => visit.id_visiteur === userId);
+      console.log(`Après filtrage: ${filteredVisits.length} visites`);
+      return filteredVisits;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des visites:', error);
+    throw error;
+  }
 };
 
 // Création d'une visite
